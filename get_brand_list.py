@@ -8,6 +8,7 @@ def get_brand_list(keyword):
     
     import pandas as pd
     df = pd.read_csv('brand_list.csv')
+    
     try:
         value = df.loc[
             (df['키워드1'] == keyword.lower()) |
@@ -19,6 +20,7 @@ def get_brand_list(keyword):
         ].values[0]
     except IndexError: # 우리 브랜드명에 포함이 되지 않는다면 etc
         value = 'etc'
+    print(f'{keyword} -> {value}')
 
     return value
 
