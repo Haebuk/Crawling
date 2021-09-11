@@ -1,6 +1,11 @@
 import json
 def transform_datatype_and_soldout(file_name):
-
+    """ 데이터 타입 변경과 soldout 판별하는 함수
+    
+    :param file_name: 파일 이름
+    :return: json_data: 데이터 타입이 변경된 전체 파일 리스트
+    :return: exclude_soldout_list: 데이터 타입 변경 후 판매중인 상품만 담은 파일 리스트
+    """
     with open(file_name, 'r', encoding='utf-8') as json_data:
         json_data = json.load(json_data)
         print(f'json file length: {len(json_data)}')
