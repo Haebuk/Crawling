@@ -3,7 +3,7 @@ def check_length(filename):
 
     with open(filename, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    print(len(data))
+    print(f"{filename} length: {len(data)}")
 
 if __name__ == '__main__':
     check_length('프롬노웨어.json')
