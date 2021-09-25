@@ -5,7 +5,8 @@ from check_length import check_length
 
 def intergrate_files(file1, file2):
     """
-    This function will intergrate two json files.
+    두 json 파일을 합치는 함수
+    서로 다른 컴퓨터에서 실행한 각 두 파일(이름이 겹치지 않게 다른 파일이름으로 저장했을 경우)을 합칠 때 사용
     """
     # Load the json files. The result is list.
     data1 = load_json(file1)

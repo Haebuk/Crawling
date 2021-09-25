@@ -1,5 +1,7 @@
 def get_brand_list(keyword):
-    """sumary_line: 사이트에서 그대로 가져온 브랜드명을 우리 브랜드명에 맞게 바꿔준다.
+    """
+    사이트에서 그대로 가져온 브랜드명을 우리 브랜드명에 맞게 바꿔준다.
+    brand_list.csv 필요함
     
     Keyword arguments:
     keyword: 사이트에서 가져온 브랜드명
