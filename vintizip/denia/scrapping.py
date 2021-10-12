@@ -42,6 +42,14 @@ class DeniaScrapping(webdriver.Chrome):
         print(f'length: {len(products)}')
         return products 
 
+    def get_product_thumbnail(self, products, iter): # 썸네일 이미지를 가져오는 함수
+        css = 'div > a > img'
+        # 드라이버 재정의
+        print(products[iter])
+        product_thumbnail = products[iter].find_element_by_css_selector(css).get_attribute('src')
+        print(f'thumbnail:{product_thumbnail}')
+        return product_thumbnail
+        
     def get_product_category(self): # 품목 카테고리 가져오는 함수
         css = '#contents > div > div.xans-element-.xans-product.xans-product-headcategory.title > h2 > span'
         category = self.find_element_by_css_selector(css).text.strip()
@@ -122,13 +130,6 @@ class DeniaScrapping(webdriver.Chrome):
         # print(f'type: {type_}, size:{product_size}')
         # return type_, product_size
 
-    def get_product_thumbnail(self, products, iter): # 썸네일 이미지를 가져오는 함수
-        css = 'div > a'
-        # 드라이버 재정의
-        print(products[iter])
-        product_thumbnail = products[iter].find_element_by_css_selector(css).get_attribute('src')
-        print(f'thumbnail:{product_thumbnail}')
-        return product_thumbnail
 
     def get_product_sex(self): # 성별 구분하는 함수
         css = '#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > div.xans-element-.xans-product.xans-product-detaildesign > table > tbody > tr:nth-child(3) > td'
