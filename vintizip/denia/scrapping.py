@@ -1,4 +1,6 @@
 import time
+
+from numpy.core.fromnumeric import prod
 import denia.constants as const
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -131,14 +133,15 @@ class DeniaScrapping(webdriver.Chrome):
         return product_sale_price
 
     def get_product_size(self): # 품목 사이즈를 가져오는 함수
-        css = '#prdDetail > div > div:nth-child(7) > div:nth-child(2) > div > div:nth-child(3) > div'
-        product_sizes = self.find_element_by_css_selector(css).text
-        product_sizes = product_sizes.strip().split('\n')
-        try: # 가슴 사이즈가 있으면 가슴 사이즈만 추출
-            product_size = [x for x in product_sizes if '가슴' in x][0].split('가슴 -')[1][:3]
+        css = '#prdDetail > div'
+        product_sizes = self.find_element_by_css_selector(css).get_attribute('innerHTML')
+        product_sizes = product_sizes.strip().split('실측')[1]
+        print(product_sizes)
+        if '가슴' in product_sizes:
+            product_size = product_sizes.split('가슴')[1].split('- ')[1].split('&')[0]
             type_ = '가슴'
-        except: # 가슴 사이즈 없고 허리 사이즈 있으면 허리 사이즈 추출
-            product_size = [x for x in product_sizes if '허리' in x][0].split('허리 -')[1][:3]
+        else:
+            product_size = product_sizes.split('허리')[1].split(' ')[1].split('&')[0]
             type_ = '허리'
         print(f'type: {type_}, size:{product_size}')
         return type_, product_size
