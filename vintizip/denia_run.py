@@ -31,7 +31,7 @@ with DeniaScrapping() as denia:
                 print('----------------{} page, {} -----------------'.format(i, iter+1))
 
                 try:
-                    product_thumbnail = denia.get_product_thumbnail(product_list, iter)
+                    product_thumbnail = denia.get_product_thumbnail(iter)
                     product_link = denia.click_product(iter)
                     product_name = denia.get_product_name()
                     is_sold_out = denia.is_product_sold_out()
@@ -42,15 +42,14 @@ with DeniaScrapping() as denia:
                     product_price = denia.get_product_price()
                     product_sale_price = denia.get_product_sale_price()
                     product_type, product_size = denia.get_product_size()
-                    product_gender = denia.get_product_gender(url)
-                    product_category = denia.get_product_category_type(product_category_name, product_name)
+                    product_gender = denia.get_product_gender(n)
                     product_brand_after = get_brand_list(product_brand_before)
                 except Exception as e:
                     print(e)
                     time.sleep(0.5)
                     denia.land_first_page(url=base_url+str(n), i=i)
                     continue
-                json_ = get_clothes_info(store_name, product_sale_price, product_name, product_category, product_gender,
+                json_ = get_clothes_info(store_name, product_sale_price, product_name, product_category_name, product_gender,
         product_brand_after, product_price, product_thumbnail, product_link, is_sold_out=False, product_size=product_size, product_type=product_type)
                 total_list.append(json_)
                 time.sleep(0.5)

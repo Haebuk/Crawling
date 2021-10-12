@@ -30,6 +30,9 @@ class DeniaScrapping(webdriver.Chrome):
             close.click()
             print('팝업 창 닫기')
             self.switch_to.default_content()
+        else:
+            print('팝업 창 없음')
+            return
 
     def land_first_page(self, url, i): # 페이지를 여는 함수
         self.get(url + f'&page={i}')
@@ -42,11 +45,12 @@ class DeniaScrapping(webdriver.Chrome):
         print(f'length: {len(products)}')
         return products 
 
-    def get_product_thumbnail(self, products, iter): # 썸네일 이미지를 가져오는 함수
-        css = 'div > a > img'
+    def get_product_thumbnail(self, iter): # 썸네일 이미지를 가져오는 함수
+        css1 = '#contents > div > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-listnormal > ul'
+        xpath = '//*[starts-with(@id, "anchorBoxId_")]'
+        css2 = 'div > a > img'
         # 드라이버 재정의
-        print(products[iter])
-        product_thumbnail = products[iter].find_element_by_css_selector(css).get_attribute('src')
+        product_thumbnail = self.find_element_by_css_selector(css1).find_elements_by_xpath(xpath)[iter].find_element_by_css_selector(css2).get_attribute('src')
         print(f'thumbnail:{product_thumbnail}')
         return product_thumbnail
         
@@ -67,6 +71,16 @@ class DeniaScrapping(webdriver.Chrome):
             product_category = 'others'
         print(category)
         return product_category
+
+    def is_product_sold_out(self): # 품절 여부 확인하는 함수
+        css = '#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > div.icon > img'
+        try:
+            WebDriverWait(self, 0.5).until(EC.presence_of_element_located((By.CSS_SELECTOR, css)))
+            print('품절 상품') 
+            return True
+        except: 
+            print('판매중인 상품')
+            return False
 
     def click_product(self, iter): # 품목을 클릭하는 함수
         css1 = '#contents > div > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-listnormal > ul'
@@ -117,62 +131,27 @@ class DeniaScrapping(webdriver.Chrome):
         return product_sale_price
 
     def get_product_size(self): # 품목 사이즈를 가져오는 함수
-        css = '#prdDetail > div > div:nth-child(8) > div:nth-child(3) > div > div > p:nth-child(3) > span:nth-child(2)'
+        css = '#prdDetail > div > div:nth-child(7) > div:nth-child(2) > div > div:nth-child(3) > div'
         product_sizes = self.find_element_by_css_selector(css).text
-        print(product_sizes)
-        # product_sizes = product_sizes.strip().split('\n')
-        # try: # 가슴 사이즈가 있으면 가슴 사이즈만 추출
-        #     product_size = [x for x in product_sizes if '가슴' in x][0].split('가슴')[1].split('cm')[0].strip()
-        #     type_ = '가슴'
-        # except: # 가슴 사이즈 없고 허리 사이즈 있으면 허리 사이즈 추출
-        #     product_size = [x for x in product_sizes if '허리' in x][0].split('허리')[1].split('cm')[0].strip()
-        #     type_ = '허리'
-        # print(f'type: {type_}, size:{product_size}')
-        # return type_, product_size
+        product_sizes = product_sizes.strip().split('\n')
+        try: # 가슴 사이즈가 있으면 가슴 사이즈만 추출
+            product_size = [x for x in product_sizes if '가슴' in x][0].split('가슴 -')[1][:3]
+            type_ = '가슴'
+        except: # 가슴 사이즈 없고 허리 사이즈 있으면 허리 사이즈 추출
+            product_size = [x for x in product_sizes if '허리' in x][0].split('허리 -')[1][:3]
+            type_ = '허리'
+        print(f'type: {type_}, size:{product_size}')
+        return type_, product_size
 
 
-    def get_product_sex(self): # 성별 구분하는 함수
-        css = '#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > div.xans-element-.xans-product.xans-product-detaildesign > table > tbody > tr:nth-child(3) > td'
-        product_size = WebDriverWait(self, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css)))
-        product_size = product_size.text
-        if product_size[0] == 'W': # 사이즈에 WL, WM 이런 식으로 되어 있으면 여자꺼
-            sex = 'women'
-        else: # M, L, 이런식이면 남자꺼
-            sex = 'men'
-        print(f'product size:{product_size}, {sex}')
-        return sex
+    def get_product_gender(self, n): # 성별 구분하는 함수
+        if n in const.BASE_URL_NO[:11]:
+            gender = 'men'
+        else:
+            gender = 'women'
+        print(f'gender: {gender}')
+        return gender
 
-    def get_product_category_type(self, product_category, sizing_name): # 품목 카테고리 구분하는 함수
-        if product_category == '반팔 · 반바지':
-            if sizing_name == '가슴':
-                category = 'top'
-            elif sizing_name == '허리':
-                category = 'bottom'
-        elif product_category == '치마 · 원피스':
-            if sizing_name == '가슴':
-                category = 'dress'
-            elif sizing_name == '허리':
-                category = 'skirt'
-        elif product_category in ['후디 · 맨투맨', '셔츠 · 긴팔티', '니트 · 가디건']:
-            category = 'top'
-        elif product_category in ['코트 · 아우터', '점퍼 · 스포츠', '자켓 · 블루종']:
-            category = 'outer'
-        else: # 가끔 품목에 기타 카테고리가 있음
-            category = 'others'
-        print(f'category:{category}')
-        return category
-
-    def is_product_sold_out(self): # 품절 여부 확인하는 함수
-        """sold out 아이콘이 있는지 체킹해서 품절 여부를 판단한다."""
-        css = '#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.headingArea > span.icon > img'
-        try:
-            product_sold_out = WebDriverWait(self, 0.5).until(EC.presence_of_element_located((By.CSS_SELECTOR, css)))
-            product_sold_out.get_attribute('src')
-            print(f'품절 상품') # img src가 있으면 sold out 아이콘이 있는 거니까 품절
-            return True
-        except: # img src가 없으면 판매중
-            print(f'판매중인 상품')
-            return False
 
 if __name__ == '__main__':
     print(RelizmScrapping().get_shop_page())

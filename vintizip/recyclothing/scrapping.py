@@ -138,4 +138,4 @@ class RecyclothingScrapping(webdriver.Chrome):
 
 
 if __name__ == '__main__':
-    print(RelizmScrapping().get_shop_page())
+    print(RecyclothingScrapping().get_shop_page())
