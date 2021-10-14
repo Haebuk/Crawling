@@ -157,4 +157,4 @@ class DeniaScrapping(webdriver.Chrome):
 
 
 if __name__ == '__main__':
-    print(RelizmScrapping().get_shop_page())
+    print(DeniaScrapping().get_shop_page())
