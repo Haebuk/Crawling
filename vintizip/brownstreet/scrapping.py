@@ -1,5 +1,6 @@
 import time
 import brownstreet.constants as const
+from brownstreet.category_filter import category_filter
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -126,46 +127,7 @@ class BrownstreetScrapping(webdriver.Chrome):
         return 'unisex'
 
     def get_product_category_type(self, product_name, product_category): # 품목 카테고리 구분하는 함수
-        for c in ['OUTERS', '코트', '아우터', '사파리', '패딩', '데님자켓', '블레이저', '후드집업/후리스', '가디건']:
-            if c in product_name:
-                if '세트' in product_name:
-                    category = 'others'
-                    print(f'category:{category}')
-                    return category
-                else:
-                    category = 'outer'
-                    print(f'category:{category}')
-                    return category
-
-        for c in ['팬츠', '1/2 팬츠', '데님팬츠']:
-            if c in product_category:
-                category = 'bottom'
-                print(f'category:{category}')
-                return category 
-        if product_category == 'PANT':
-            if '스커트' in product_name:
-                category = 'skirt'
-                print(f'category:{category}')
-                return category 
-            else:
-                category = 'bottom'
-                print(f'category:{category}')
-                return category 
-        elif product_category == '드레스':
-            category = 'dress'
-        if product_category == '스포츠':
-            if '팬츠' in product_name:
-                category = 'bottom'
-                print(f'category:{category}')
-                return category 
-            else:
-                category = 'top'
-                print(f'category:{category}')
-                return category 
-        else:
-            category = 'top'
-            print(f'category:{category}')
-            return category
+        return category_filter(category_name=product_category, product_name=product_name)
 
     def get_product_size(self): # 품목 사이즈를 가져오는 함수
         css = '#prddetailimg'

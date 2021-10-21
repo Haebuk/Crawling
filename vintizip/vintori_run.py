@@ -12,7 +12,7 @@ with VintoriScrapping() as vintori:
     data = DataToJson(file_name)
     base_url, url_list = vintori.get_shop_page()
     for n in url_list:
-        for i in range(2, 200):
+        for i in range(1, 200):
             if soldout:
                 soldout = False
                 break
