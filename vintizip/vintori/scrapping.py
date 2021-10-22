@@ -6,9 +6,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 class VintoriScrapping(webdriver.Chrome):
-    def __init__(self, driver_path = 'C:/chromedriver', teardown=False):
+    def __init__(self, driver_path = '/mnt/nas3/rjs/chromedriver', teardown=False):
         self.teardown = teardown
         options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         super(VintoriScrapping, self).__init__(options=options, executable_path=driver_path)
         self.implicitly_wait(const.IMPLICIT_WAIT_TIME)
@@ -56,9 +59,15 @@ class VintoriScrapping(webdriver.Chrome):
         css = '#df-product-detail > div > div.infoArea-wrap > div > div > div.scroll-wrapper.df-detail-fixed-scroll.scrollbar-macosx > div.df-detail-fixed-scroll.scrollbar-macosx.scroll-content > div.headingArea > span.icon > img'
         try:
             ele = WebDriverWait(self, 0.5).until(EC.presence_of_element_located((By.CSS_SELECTOR, css))).get_attribute('src')
-            if ele:
+            print(ele)
+            if '/web/upload/icon_202105141604586300.gif' in ele:
                 print('품절 상품') 
                 return True
+            
+            elif ele == '':
+                print('판매중인 상품')
+                return False
+            
             else:
                 print('판매중인 상품')
                 return False
@@ -100,7 +109,7 @@ class VintoriScrapping(webdriver.Chrome):
     def get_product_sale_price(self): # 할인 가격을 가져오는 함수
         css = '#span_product_price_sale'
         try:
-            product_sale_price = self.find_element_by_css_selector(css).text.replace(",", '').replace(" ", "").replace("원", '')
+            product_sale_price = self.find_element_by_css_selector(css).text.split(' ')[0].replace(',' , '').replace(" ", "").replace("원", '')
         except:
             product_sale_price = 0
         print(f'sale_price:{product_sale_price}')
@@ -120,16 +129,23 @@ class VintoriScrapping(webdriver.Chrome):
             category = 'skirt'
         elif ('JEANS' in product_name) or ('PANTS' in product_name) or ('CHINO' in product_name) or ('SLACKS' in product_name):
             category = 'bottom'
-        elif ('COAT' in product_name) or ('JACKET' in product_name) or ('CARDIGAN' in product_name) or ('BLAZER' in product_name) or ('JUMPER' in product_name) or ('PADDING' in product_name) or ('WINDBREAKER'):
+        elif ('COAT' in product_name) or ('JACKET' in product_name) or ('CARDIGAN' in product_name) or ('BLAZER' in product_name) or ('JUMPER' in product_name) or ('PADDING' in product_name) or ('WINDBREAKER' in product_name):
             category = 'outer'
+        elif 'SET' in product_name:
+            category = 'others'
         else:
             category = 'top'
         print(f'category:{category}')
         return category
 
     def get_product_size(self): # 품목 사이즈를 가져오는 함수
-        css = '#vintori-container > div.vintori-boards > table'
-        size = self.find_element_by_css_selector(css).text
+        try:
+            css = '#vintori-container > div.vintori-boards > table'
+            #KIWISNAP_SIZE_INFO > table
+            size = self.find_element_by_css_selector(css).text
+        except:
+            css = '#KIWISNAP_SIZE_INFO > table'
+            size = self.find_element_by_css_selector(css).text
         list1 = size.split('\n')[0].split(' ')
         list2 = size.split('\n')[1].split(' ')
         if '가슴' in list1:
