@@ -4,7 +4,9 @@ from utils.get_brand_list import get_brand_list
 from utils.get_clothes_info import get_clothes_info
 from refine import transform
 from vintori.scrapping import VintoriScrapping
+from utils.time_check import time_check
 
+start = time.time()
 with VintoriScrapping() as vintori:
     soldout = False
     store_name = 'vintori'
@@ -58,3 +60,6 @@ with VintoriScrapping() as vintori:
 
 _, exclude_soldout_list = transform(file_name)
 data.save_json(data=exclude_soldout_list)
+
+end = time.time()
+time_check(store_name, start, end)

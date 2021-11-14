@@ -2,7 +2,7 @@ import json
 import os
 class DataToJson:
     def __init__(self, filename: os.PathLike):
-        self.filename = './data/' + filename
+        self.filename = '/mnt/nas3/vintage_crawling/jsonfiles/' + filename
 
     def load_json(self):
         """
@@ -45,3 +45,5 @@ class DataToJson:
             data = json.load(f)
         print(f'{self.filename} 파일의 길이: {len(data)}')
 
+if __name__ == '__main__':
+    DataToJson('vintori.json').check_json_file_length()

@@ -4,7 +4,9 @@ from utils.get_brand_list import get_brand_list
 from utils.get_clothes_info import get_clothes_info
 from refine import transform
 from denia.scrapping import DeniaScrapping
+from utils.time_check import time_check
 
+start = time.time()
 with DeniaScrapping() as denia:
     soldout = False
     checked = False
@@ -31,7 +33,7 @@ with DeniaScrapping() as denia:
                 print('----------------{} page, {} -----------------'.format(i, iter+1))
 
                 try:
-                    product_thumbnail = denia.get_product_thumbnail(iter)
+                    product_thumbnail = denia.get_product_thumbnail(product_list, iter)
                     product_link = denia.click_product(iter)
                     product_name = denia.get_product_name()
                     is_sold_out = denia.is_product_sold_out()
@@ -60,3 +62,6 @@ with DeniaScrapping() as denia:
 
 _, exclude_soldout_list = transform(file_name)
 data.save_json(data=exclude_soldout_list)
+
+end = time.time()
+time_check(store_name, start, end)

@@ -4,7 +4,9 @@ from utils.get_brand_list import get_brand_list
 from utils.get_clothes_info import get_clothes_info
 from refine import transform
 from regarment.scrapping import RegarmentScrapping
+from utils.time_check import time_check
 
+start = time.time()
 with RegarmentScrapping() as regarment:
     soldout = False
     store_name = 'regarment'
@@ -13,7 +15,7 @@ with RegarmentScrapping() as regarment:
     data = DataToJson(file_name)
     base_url, url_list = regarment.get_shop_page()
     for n in url_list:
-        for i in range(2, 200):
+        for i in range(1, 200):
             if soldout:
                 soldout = False
                 break
@@ -48,7 +50,7 @@ with RegarmentScrapping() as regarment:
                     time.sleep(0.5)
                     regarment.land_first_page(url=base_url+str(n), i=i)
                     continue
-                json_ = get_clothes_info(store_name, product_sale_price, product_name, product_category_name, product_gender,
+                json_ = get_clothes_info(store_name, product_sale_price, product_name, product_category, product_gender,
         product_brand_after, product_price, product_thumbnail, product_link, is_sold_out=False, product_size=product_size, product_type=product_type)
                 total_list.append(json_)
                 time.sleep(0.5)
@@ -59,3 +61,6 @@ with RegarmentScrapping() as regarment:
 
 _, exclude_soldout_list = transform(file_name)
 data.save_json(data=exclude_soldout_list)
+
+end = time.time()
+time_check(store_name, start, end)

@@ -4,8 +4,9 @@ from utils.get_brand_list import get_brand_list
 from utils.get_clothes_info import get_clothes_info
 from refine import transform
 from recyclothing.scrapping import RecyclothingScrapping
+from utils.time_check import time_check
 
-
+start = time.time()
 with RecyclothingScrapping() as recyclothing:
     soldout = False
     store_name = 'recyclothing'
@@ -13,7 +14,7 @@ with RecyclothingScrapping() as recyclothing:
     data = DataToJson(file_name)
     url_list = recyclothing.get_shop_page()
     for url in url_list:
-        for i in range(6, 200):
+        for i in range(1, 200):
             if soldout:
                 soldout = False
                 break
@@ -60,3 +61,6 @@ with RecyclothingScrapping() as recyclothing:
 
 _, exclude_soldout_list = transform(file_name)
 data.save_json(data=exclude_soldout_list)
+
+end = time.time()
+time_check(store_name, start, end)

@@ -4,7 +4,9 @@ from utils.get_brand_list import get_brand_list
 from utils.get_clothes_info import get_clothes_info
 from refine import transform
 from brownstreet.scrapping import BrownstreetScrapping
+from utils.time_check import time_check
 
+start = time.time()
 with BrownstreetScrapping() as brownstreet:
     soldout = False
     store_name = 'brownstreet'
@@ -40,7 +42,7 @@ with BrownstreetScrapping() as brownstreet:
                     product_gender = brownstreet.get_product_gender(product_name)
                     product_sale_price = brownstreet.get_product_sale_price()
                     product_category = brownstreet.get_product_category_type( product_name=product_name, product_category=product_category_name)
-                    product_type, product_size = brownstreet.get_product_size()
+                    product_type, product_size = brownstreet.get_product_size(product_name)
                     product_brand_after = get_brand_list(product_brand_before)
                 except Exception as e:
                     print(e)
@@ -56,5 +58,9 @@ with BrownstreetScrapping() as brownstreet:
                 del total_list
 
 
+    
 _, exclude_soldout_list = transform(file_name)
 data.save_json(data=exclude_soldout_list)
+
+end = time.time()
+time_check(store_name, start, end)
